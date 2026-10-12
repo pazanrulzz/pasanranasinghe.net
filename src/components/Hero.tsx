@@ -34,7 +34,7 @@ export default function Hero() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.2 }}
-        className="grid h-[520px] grid-cols-2 gap-3 overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,#000_6%,#000_92%,transparent)] lg:h-auto lg:max-h-[calc(100vh-90px)]"
+        className="grid h-[520px] grid-cols-2 gap-3 overflow-hidden [mask-image:linear-gradient(to_bottom,#000_92%,transparent)] lg:h-auto lg:max-h-[calc(100vh-90px)]"
       >
         <Column items={showcaseA} />
         <Column items={showcaseB} reverse />
