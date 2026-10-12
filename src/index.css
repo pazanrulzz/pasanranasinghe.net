@@ -38,3 +38,42 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .animate-scroll-up, .animate-scroll-down, .animate-marquee { animation: none; }
 }
+
+/* Liquid glass surface */
+.liquid-glass {
+  position: relative;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.18) 45%, rgba(255, 255, 255, 0.4) 100%);
+  /* Fallback for browsers without SVG backdrop filters */
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  backdrop-filter: blur(16px) saturate(180%);
+  /* Chromium: adds refraction on top of the blur */
+  backdrop-filter: blur(10px) saturate(180%) url(#liquid-glass-distortion);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.95),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.45),
+    inset 0 0 24px rgba(255, 255, 255, 0.35),
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 10px 30px -8px rgba(30, 40, 80, 0.18);
+  transition: box-shadow 0.3s ease, background 0.3s ease;
+}
+/* Specular rim light around the edge */
+.liquid-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.95),
+    rgba(255, 255, 255, 0) 35%,
+    rgba(255, 255, 255, 0) 65%,
+    rgba(255, 255, 255, 0.85)
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  pointer-events: none;
+}
