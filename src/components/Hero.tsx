@@ -1,21 +1,31 @@
 import { motion } from 'framer-motion'
-import { showcaseA, showcaseB, site } from '../data/content'
+import { site } from '../data/content'
+import { useProjects } from '../lib/ProjectsContext'
+import type { Project } from '../types'
 import ShowcaseCard from './ShowcaseCard'
 
-function Column({ items, reverse = false }: { items: typeof showcaseA; reverse?: boolean }) {
+function Column({ items, reverse = false }: { items: Project[]; reverse?: boolean }) {
   const loop = [...items, ...items]
   return (
     <div className="overflow-hidden">
       <div className={`flex flex-col gap-3 ${reverse ? 'animate-scroll-down' : 'animate-scroll-up'}`}>
         {loop.map((p, i) => (
-          <ShowcaseCard key={i} project={p} tall={i % 2 === 1} />
+          <ShowcaseCard key={`${p.slug}-${i}`} project={p} tall={i % 2 === 1} />
         ))}
       </div>
     </div>
   )
 }
 
+function fill(projects: Project[], offset: number): Project[] {
+  if (projects.length === 0) return []
+  return Array.from({ length: Math.max(4, projects.length) }, (_, i) => projects[(i + offset) % projects.length])
+}
+
 export default function Hero() {
+  const { projects } = useProjects()
+  const showcaseA = fill(projects, 0)
+  const showcaseB = fill(projects, 1)
   return (
     <section className="mx-auto grid max-w-[1400px] gap-10 px-4 pb-16 pt-10 sm:px-6 lg:min-h-[calc(100vh-90px)] lg:grid-cols-[1.05fr_1fr] lg:gap-12 lg:px-10 lg:py-0">
       <motion.div

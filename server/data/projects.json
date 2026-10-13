@@ -1,0 +1,223 @@
+[
+  {
+    "slug": "innovation-unit-biobank-search",
+    "title": "Innovation Unit Biobank Search",
+    "heading": "Designing a smart search and data visualization tool for browsing biobank and disease data at Boehringer Ingelheim's Innovation Unit.",
+    "client": "Boehringer Ingelheim – Innovation Unit",
+    "stage": "",
+    "industry": "Pharmaceutical research",
+    "timeline": "",
+    "quote": "",
+    "author": "",
+    "authorRole": "",
+    "clientLogo": "",
+    "authorPhoto": "",
+    "aboutLead": "A preliminary case study on designing a smart search tool for browsing internal and external biobanks and visualizing disease data.",
+    "about": [
+      "Innovation Unit is a research team at Boehringer Ingelheim dedicated to researching and documenting advanced biobank data such as variants, studies, or traits tied to genetic diseases. The project was about building and designing a search tool based on external and internal biobanks.",
+      "As the principal UX designer and researcher, my role was understanding user requirements and how lab experts search disease records online in their daily work. The focus areas were mainly filtering and data visualization. The engagement covered research, user personas, user flows, wireframes and UI & UX design.",
+      "The solution retrieves publicly accessible data on a searched disease from multiple internal and external sources and outputs it in text-based and statistical forms, including disease name, classification and type, associated diseases and variants, and statistical figures. Results are rendered in a dashboard with bi-directional filtering, a dedicated biobank sidebar, and a downloadable PDF report with the rendered charts for offline assessment."
+    ],
+    "challengeLead": "The target users would not spend more than 2–4 minutes searching for a quick result, so search and filtering had to be user friendly and intuitive.",
+    "challengeIntro": "Additional requirements such as multi-tier filtering and cross-database searching were gathered during the process, leading to the idea of a Smart search feature. Initial user research with 30 handpicked candidates — lab experts, data analysts, IT experts, researchers and product owners — showed that technical experts and subject matter experts gave differing feedback on data readability and visualization, so the solution had to be fine-tuned to close the gap between the two user groups.",
+    "challengePoints": [
+      {
+        "title": "Multi-tier and cross-database search",
+        "text": "Users needed to search across multiple internal and external data sources and filter results across several tiers, which led to the Smart search feature built on Elastic search."
+      },
+      {
+        "title": "Large quantitative outputs",
+        "text": "The sheer amount of numerical data had to be categorized into subsections based on the source of the data, showing straightforward data instead of biased or hypothetical outputs."
+      },
+      {
+        "title": "Readable, accurate visualizations",
+        "text": "Charts had to be handpicked and clarified with user groups before prototyping, using bi-directional bar charts on a log(10) scale, donut charts with zoom and hover values, and horizontal bar charts for biobank collection scopes."
+      },
+      {
+        "title": "Offline assessment",
+        "text": "Lab experts needed to document findings physically, so a downloadable PDF report with the rendered charts was generated from the search criteria."
+      }
+    ],
+    "brandingLead": "Colors throughout the application highlight points of interest based on values, information priority and result accuracy, in line with Boehringer Ingelheim's new branding guidelines.",
+    "branding": [
+      "Orange, faded yellow and light green were used to prioritize information and signal result accuracy, in alignment with the new branding color guidelines at Boehringer Ingelheim.",
+      "Charts were built with D3.js, whose full customizability allowed spacing and text sizes to be adjusted to suit the overall design and branding guidelines."
+    ],
+    "coverImage": "/uploads/6620c56abde04be22d0d512c.jpg",
+    "banners": [
+      "/uploads/9229730cbbdd931c095e7b15.png",
+      "/uploads/a966c3a027c3ca95cd02a7b0.png",
+      "/uploads/56759f79402cef28962acd4a.png",
+      "/uploads/014c9891aab473183642c0f5.png",
+      "/uploads/af7720f71b1d84febe35b21d.png",
+      "/uploads/a2ba689f7c0c96f36beed461.png",
+      "/uploads/c10216ca5bb18ebc8057e112.png",
+      "/uploads/4bfc625e1e95ce2ca696b8d6.png"
+    ],
+    "custom": [
+      {
+        "id": "c-8f8d513a96",
+        "type": "banner",
+        "label": "",
+        "lead": "",
+        "paragraphs": [],
+        "image": "/uploads/4e2e3abc82c9f5ccc7b206b4.png",
+        "compact": false,
+        "images": []
+      },
+      {
+        "id": "c-b5a636cb9d",
+        "type": "banner",
+        "label": "",
+        "lead": "",
+        "paragraphs": [],
+        "image": "/uploads/a300b87b9e3b68b767b06213.png",
+        "compact": false,
+        "images": []
+      },
+      {
+        "id": "c-e00d373b71",
+        "type": "banner",
+        "label": "",
+        "lead": "",
+        "paragraphs": [],
+        "image": "/uploads/8a925a3dcbe3e5ec1d4f24d9.png",
+        "compact": false,
+        "images": []
+      },
+      {
+        "id": "c-a536f8ea98",
+        "type": "banner",
+        "label": "",
+        "lead": "",
+        "paragraphs": [],
+        "image": "/uploads/2aaa3eb6f1108af43975486f.png",
+        "compact": false,
+        "images": []
+      }
+    ],
+    "order": [
+      "banner-0",
+      "about",
+      "banner-1",
+      "banner-2",
+      "challenge",
+      "banner-3",
+      "branding",
+      "banner-4",
+      "banner-5",
+      "banner-6",
+      "banner-7",
+      "c-8f8d513a96",
+      "c-b5a636cb9d",
+      "c-e00d373b71",
+      "c-a536f8ea98"
+    ],
+    "tags": [
+      "UX Research",
+      "Data Visualization",
+      "Search & Filtering",
+      "Dashboard"
+    ],
+    "category": "Product Design",
+    "colorFrom": "#08312a",
+    "colorTo": "#028a4f",
+    "caption": "Smart biobank browsing and disease data visualization",
+    "dark": true
+  },
+  {
+    "slug": "gaming-platform-brand",
+    "title": "Maier Fendler Consulting",
+    "heading": "Designing of an AI face reading app that turns a portrait into clear,\nactionable personality insights.",
+    "client": "Maier Fendler",
+    "stage": "",
+    "industry": "Management",
+    "timeline": "3 months",
+    "quote": "",
+    "author": "",
+    "authorRole": "",
+    "clientLogo": "",
+    "authorPhoto": "",
+    "aboutLead": "",
+    "about": [
+      "Maier Fendler Consulting applies face reading as a coaching and\nconsulting approach to grasp how individuals think, decide, and\ncommunicate. Previously, this expertise resided in workshops and\none-to-one sessions.\nMAIFE translates its approach into a mobile app: users upload or\ncapture a portrait, an AI model evaluates facial features, and the\napp describes the persona behind the face, along with ways to\nmotivate, address, and collaborate with that particular ndividual."
+    ],
+    "challengeLead": "A fresh identity had to become a brand system that could support a social platform across every touchpoint.",
+    "challengeIntro": "The existing identity was not a strong long-term foundation, while the website and pitch deck lacked a consistent visual language. The work needed to give Orbitly a distinctive presence without making a complex product harder to understand.",
+    "challengePoints": [
+      {
+        "title": "A design handoff built for the team's workflow",
+        "text": "The team wanted to keep development within its existing tools, so the design needed enough interaction context to implement it with confidence."
+      }
+    ],
+    "brandingLead": "I shaped a bold, playful identity with enough flexibility for both light and dark applications.",
+    "branding": [
+      "The visual system centered on a vivid primary color and paired playful cues with clean typography and restrained layouts. This gave Orbitly a more recognizable character while keeping the identity suitable for a broad audience.",
+      "I delivered the logo and wordmark in PNG and SVG formats, along with a brand guide that defined how the system should carry across future work."
+    ],
+    "coverImage": "/uploads/d697dd964293cd6e674770dd.png",
+    "banners": [
+      "/uploads/49dc0204b2691038a74d956b.png",
+      "/uploads/6512bcbcda397dbb8ec9ea29.png",
+      "/uploads/923d22a2675955c9f9371c49.png",
+      "/uploads/8ca85de6faddabdf82461660.png",
+      "/uploads/ef2387ac5053b7574c511a31.png",
+      "/uploads/e70fc4caba29ffcd2f16ee3f.png",
+      "/uploads/d9ccd3199cd75c10c609f6fd.png",
+      "/uploads/04f862a2e65f5dff529b548e.png"
+    ],
+    "custom": [
+      {
+        "id": "c-be61af326d",
+        "type": "banner",
+        "label": "",
+        "lead": "",
+        "paragraphs": [],
+        "image": "/uploads/7d3f95a341ebb35e40315d13.png",
+        "compact": true,
+        "images": []
+      },
+      {
+        "id": "c-02f20e707f",
+        "type": "collage",
+        "label": "",
+        "lead": "",
+        "paragraphs": [],
+        "image": "",
+        "compact": false,
+        "images": [
+          "/uploads/e873c91fb6c8546a939bea96.png",
+          "/uploads/be2d7fd26df66028802d05bd.png",
+          "/uploads/f562301f3e741fdbcd43b44f.png",
+          "/uploads/130bef63cdab4868c41517ea.png",
+          "/uploads/fb78f79fcc64a95258ba93bd.png",
+          "/uploads/c988eca4077aafcc41a11dc7.png"
+        ]
+      }
+    ],
+    "order": [
+      "banner-0",
+      "about",
+      "c-be61af326d",
+      "banner-1",
+      "banner-2",
+      "challenge",
+      "banner-3",
+      "branding",
+      "banner-4",
+      "banner-5",
+      "banner-6",
+      "banner-7",
+      "c-02f20e707f"
+    ],
+    "tags": [
+      "Web3",
+      "Branding"
+    ],
+    "category": "Consulting",
+    "colorFrom": "#9ec2f0",
+    "colorTo": "#e7b98c",
+    "caption": "A new world awaits.",
+    "dark": false
+  }
+]

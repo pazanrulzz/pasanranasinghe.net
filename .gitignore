@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Server secrets and uploads
+server/.env
+server/uploads/*
+!server/uploads/.gitkeep
+server/admin-password.txt

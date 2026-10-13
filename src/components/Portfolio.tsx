@@ -2,12 +2,14 @@ import { useMemo, useState } from 'react'
 import { SlidersHorizontal } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { categories, projects } from '../data/content'
+import { useProjects } from '../lib/ProjectsContext'
 import ShowcaseCard from './ShowcaseCard'
 
 export default function Portfolio() {
+  const { projects, loading } = useProjects()
   const [active, setActive] = useState<string>('All')
-  const list = useMemo(() => (active === 'All' ? projects : projects.filter((p) => p.category === active)), [active])
+  const categories = useMemo(() => [...new Set(projects.map((p) => p.category))], [projects])
+  const list = useMemo(() => (active === 'All' ? projects : projects.filter((p) => p.category === active)), [active, projects])
 
   return (
     <section id="portfolio" className="mx-auto max-w-[1400px] px-4 py-16 sm:px-6 lg:px-10">
@@ -35,12 +37,13 @@ export default function Portfolio() {
           </div>
         </aside>
 
+        {!loading && projects.length === 0 && <p className="text-lg text-muted">No projects yet.</p>}
         <motion.div layout className="grid gap-5 sm:grid-cols-2">
           <AnimatePresence mode="popLayout">
             {list.map((p) => (
               <motion.article
                 layout
-                key={p.title}
+                key={p.slug}
                 initial={{ opacity: 0, scale: 0.97 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.97 }}

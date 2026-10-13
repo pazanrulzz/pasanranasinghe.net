@@ -22,7 +22,7 @@ function Dropdown({ label, items }: { label: string; items: string[] }) {
         {label}
         <ChevronDown className="size-4 transition-transform group-hover:rotate-180" />
       </button>
-      <div className="invisible absolute left-0 top-full z-50 pt-2 opacity-0 transition group-hover:visible group-hover:opacity-100">
+      <div className="invisible absolute right-0 top-full z-50 pt-2 opacity-0 transition group-hover:visible group-hover:opacity-100">
         <ul className="min-w-48 rounded-2xl border border-white/70 bg-white/85 p-1.5 shadow-lg backdrop-blur-xl">
           {items.map((i) => (
             <li key={i}>

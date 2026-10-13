@@ -14,7 +14,7 @@ export default function Footer() {
             <p className="mt-4 text-xl leading-snug text-[#555]">
               {footer.address.map((l) => <span key={l} className="block">{l}</span>)}
             </p>
-            <div className="mt-8 flex gap-16">
+            <div className="mt-8 flex flex-wrap gap-x-16 gap-y-6">
               <div>
                 <h4 className="text-xl">Phone</h4>
                 <a href={`tel:${footer.phone.replace(/\s/g, '')}`} className="mt-3 block text-xl text-[#555] underline underline-offset-2">
@@ -23,7 +23,7 @@ export default function Footer() {
               </div>
               <div>
                 <h4 className="text-xl">Email</h4>
-                <a href={`mailto:${footer.email}`} className="mt-3 block text-xl text-[#555] hover:underline">
+                <a href={`mailto:${footer.email}`} className="mt-3 block break-all text-xl text-[#555] hover:underline">
                   {footer.email}
                 </a>
               </div>
@@ -36,8 +36,12 @@ export default function Footer() {
                 <h4 className="text-xl">{col.title}</h4>
                 <ul className="mt-5 space-y-4">
                   {col.links.map((l) => (
-                    <li key={l}>
-                      <a href="#" className="text-xl text-[#777] transition hover:text-ink">{l}</a>
+                    <li key={l.label}>
+                      {l.to.startsWith('/') ? (
+                        <Link to={l.to} className="text-xl text-[#777] transition hover:text-ink">{l.label}</Link>
+                      ) : (
+                        <a href={l.to} className="text-xl text-[#777] transition hover:text-ink">{l.label}</a>
+                      )}
                     </li>
                   ))}
                 </ul>
