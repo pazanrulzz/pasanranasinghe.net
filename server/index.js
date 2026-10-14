@@ -6,7 +6,7 @@ import express from 'express'
 import cookieParser from 'cookie-parser'
 import jwt from 'jsonwebtoken'
 import multer from 'multer'
-import { SmartCreateError, analyzeSource, isConfigured } from './smart-create.js'
+import { getSmartJob, hasRunningJob, isConfigured, rendererAvailable, startSmartJob } from './smart-create.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT = path.resolve(__dirname, '..')
@@ -304,33 +304,47 @@ app.post('/api/uploads', requireAuth, (req, res) => {
   })
 })
 
-// Smart create: read a PDF or image with Claude and return case study text for the editor to review.
-const analyzeUpload = multer({
+// Smart create: Claude reads a PDF or image, writes the case study text and redraws each visual section as fresh HTML,
+// which is rendered to sharp images. It runs as a background job that the editor polls for progress.
+const smartUpload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 25 * 1024 * 1024, files: 1, fields: 5 },
   fileFilter: (_req, file, cb) => cb(null, file.mimetype === 'application/pdf' || Boolean(EXT[file.mimetype])),
 })
 
-app.get('/api/smart-create/status', requireAuth, (_req, res) => res.json({ configured: isConfigured() }))
+const smartFiles = {
+  async saveImage(buffer, ext) {
+    const name = `${crypto.randomBytes(12).toString('hex')}${ext}`
+    await fs.promises.writeFile(path.join(UPLOAD_DIR, name), buffer)
+    return `/uploads/${name}`
+  },
+  async removeImage(url) {
+    removeUpload(url)
+  },
+}
 
-app.post('/api/smart-create/analyze', requireAuth, (req, res) => {
-  analyzeUpload.single('file')(req, res, async (err) => {
+app.get('/api/smart-create/status', requireAuth, (_req, res) =>
+  res.json({ configured: isConfigured(), renderer: rendererAvailable() }),
+)
+
+app.post('/api/smart-create/start', requireAuth, (req, res) => {
+  smartUpload.single('file')(req, res, (err) => {
     if (err) return res.status(400).json({ error: err.code === 'LIMIT_FILE_SIZE' ? 'File is larger than 25 MB' : 'Upload failed' })
     if (!req.file) return res.status(400).json({ error: 'Upload a PDF or a PNG, JPG, WebP or GIF image' })
-    try {
-      const notes = typeof req.body?.notes === 'string' ? req.body.notes.trim().slice(0, 2000) : ''
-      const result = await analyzeSource({
-        buffer: req.file.buffer,
-        mediaType: req.file.mimetype,
-        notes,
-        fileName: str(req.file.originalname, 120),
-      })
-      res.json(result)
-    } catch (e) {
-      const status = e instanceof SmartCreateError ? e.status : 500
-      res.status(status).json({ error: e instanceof SmartCreateError ? e.message : 'Smart create failed' })
-    }
+    if (hasRunningJob()) return res.status(409).json({ error: 'Another Smart create is still running. Wait for it to finish.' })
+    const notes = typeof req.body?.notes === 'string' ? req.body.notes.trim().slice(0, 2000) : ''
+    const jobId = startSmartJob(
+      { buffer: req.file.buffer, mediaType: req.file.mimetype, notes, fileName: str(req.file.originalname, 120) },
+      smartFiles,
+    )
+    res.status(202).json({ jobId })
   })
+})
+
+app.get('/api/smart-create/jobs/:id', requireAuth, (req, res) => {
+  const job = getSmartJob(req.params.id)
+  if (!job) return res.status(404).json({ error: 'That job is no longer available' })
+  res.json(job)
 })
 
 app.use('/uploads', express.static(UPLOAD_DIR, { index: false, dotfiles: 'deny' }))
