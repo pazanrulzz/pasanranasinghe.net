@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
 import { footer, site } from '../data/content'
 
+const YEAR = new Date().getFullYear()
+
 export default function Footer() {
   return (
     <footer className="mt-10 bg-[#fcfbf9]">
@@ -49,6 +51,10 @@ export default function Footer() {
             ))}
           </div>
         </div>
+
+        <p className="mt-16 text-xl text-ink">
+          Designed by Me <span role="img" aria-label="love">❤️</span> | Copyright © {YEAR}
+        </p>
       </div>
     </footer>
   )

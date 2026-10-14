@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Google Sans Flex Variable", ui-sans-serif, system-ui, sans-serif;
   --color-accent: #ee5a3c;
   --color-accent-dark: #d84a2d;
   --color-ink: #141414;
