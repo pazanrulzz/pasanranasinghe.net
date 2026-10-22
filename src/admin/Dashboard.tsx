@@ -24,17 +24,17 @@ export default function Dashboard() {
 
   return (
     <>
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-medium tracking-tight">Portfolio items</h1>
-        <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-4">
+        <h1 className="text-2xl font-medium tracking-tight sm:text-3xl">Portfolio items</h1>
+        <div className="flex items-center gap-2 sm:gap-3">
           <button
             type="button"
             onClick={() => setSmartOpen(true)}
-            className="flex items-center gap-2 rounded-lg border border-line bg-white px-4 py-2.5 font-medium hover:border-accent hover:text-accent"
+            className="flex items-center gap-2 whitespace-nowrap rounded-lg border border-line bg-white px-3 py-2.5 text-sm font-medium hover:border-accent hover:text-accent sm:px-4 sm:text-base"
           >
             <Sparkles className="size-4" /> Smart create
           </button>
-          <Link to="/admin/new" className="flex items-center gap-2 rounded-lg bg-accent px-4 py-2.5 font-medium text-white hover:bg-accent-dark">
+          <Link to="/admin/new" className="flex items-center gap-2 whitespace-nowrap rounded-lg bg-accent px-3 py-2.5 text-sm font-medium text-white hover:bg-accent-dark sm:px-4 sm:text-base">
             <Plus className="size-4" /> New item
           </Link>
         </div>
@@ -50,16 +50,17 @@ export default function Dashboard() {
         ) : (
           <ul className="divide-y divide-line">
             {projects.map((p) => (
-              <li key={p.slug} className="flex items-center gap-4 p-4">
+              <li key={p.slug} className="flex flex-wrap items-center gap-x-4 gap-y-3 p-4">
                 {p.coverImage ? (
                   <img src={p.coverImage} alt="" className="size-16 shrink-0 rounded-lg object-cover" />
                 ) : (
                   <div className="size-16 shrink-0 rounded-lg" style={{ backgroundImage: gradientOf(p) }} />
                 )}
-                <div className="min-w-0 flex-1">
+                <div className="min-w-[10rem] flex-1">
                   <p className="truncate text-lg">{p.title}</p>
                   <p className="truncate text-sm text-muted">{p.category}{p.client ? ` · ${p.client}` : ''}</p>
                 </div>
+                <div className="ml-auto flex items-center gap-1 sm:gap-2">
                 <Link to={`/work/${p.slug}`} target="_blank" aria-label={`View ${p.title}`} className="rounded-lg p-2 hover:bg-panel">
                   <ExternalLink className="size-5" />
                 </Link>
@@ -73,6 +74,7 @@ export default function Dashboard() {
                 >
                   <Trash2 className="size-5" />
                 </button>
+                </div>
               </li>
             ))}
           </ul>
@@ -81,7 +83,7 @@ export default function Dashboard() {
       {smartOpen && (
         <SmartCreateDialog
           onClose={() => setSmartOpen(false)}
-          onGenerated={(draft, source) => navigate('/admin/new', { state: { draft, source } })}
+          onGenerated={(draft, source, skipped) => navigate('/admin/new', { state: { draft, source, skipped } })}
         />
       )}
     </>

@@ -38,7 +38,7 @@ function Card({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="rounded-2xl border border-line bg-white p-6">
       <h2 className="text-lg font-medium">{title}</h2>
-      <div className="mt-5 grid gap-4">{children}</div>
+      <div className="mt-5 grid grid-cols-1 gap-4">{children}</div>
     </section>
   )
 }
@@ -199,7 +199,7 @@ function SortableBlock({
     <section
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
-      className={`rounded-2xl border bg-white ${isDragging ? 'relative z-10 border-accent shadow-xl' : 'border-line'}`}
+      className={`min-w-0 rounded-2xl border bg-white ${isDragging ? 'relative z-10 border-accent shadow-xl' : 'border-line'}`}
     >
       <div className="flex items-center gap-3 p-3 pr-4">
         <button
@@ -234,14 +234,14 @@ function SortableBlock({
           </button>
         )}
       </div>
-      {open && <div className="grid gap-4 border-t border-line p-6">{children}</div>}
+      {open && <div className="grid grid-cols-1 gap-4 border-t border-line p-4 sm:p-6">{children}</div>}
     </section>
   )
 }
 
 const toParagraphs = (text: string) => text.split(/\n\s*\n/).map((t) => t.trim()).filter(Boolean)
 
-function EditorForm({ slug, initial, generatedFrom }: { slug?: string; initial: ProjectInput; generatedFrom?: string }) {
+function EditorForm({ slug, initial, generatedFrom, skipped = 0 }: { slug?: string; initial: ProjectInput; generatedFrom?: string; skipped?: number }) {
   const navigate = useNavigate()
   const { projects, refresh } = useProjects()
   const [form, setForm] = useState(initial)
@@ -399,7 +399,7 @@ function EditorForm({ slug, initial, generatedFrom }: { slug?: string; initial: 
         <SortableBlock key={id} id={id} position={position} title="The challenge" summary={form.challengeLead}>
           <Field label="Lead sentence"><textarea rows={2} {...text('challengeLead')} /></Field>
           <Field label="Intro paragraph"><textarea rows={4} {...text('challengeIntro')} /></Field>
-          <div className="grid gap-3">
+          <div className="grid grid-cols-1 gap-3">
             <span className="text-sm font-medium">Points</span>
             {form.challengePoints.map((pt, i) => (
               <div key={i} className="rounded-xl border border-line p-4">
@@ -502,7 +502,7 @@ function EditorForm({ slug, initial, generatedFrom }: { slug?: string; initial: 
   }
 
   return (
-    <form onSubmit={onSubmit} className="grid gap-6">
+    <form onSubmit={onSubmit} className="grid grid-cols-1 gap-6">
       <div>
         <Link to="/admin" className="inline-flex items-center gap-2 text-sm text-muted hover:text-ink">
           <ArrowLeft className="size-4" /> All items
@@ -515,7 +515,7 @@ function EditorForm({ slug, initial, generatedFrom }: { slug?: string; initial: 
           <Sparkles className="mt-0.5 size-4 shrink-0 text-accent" />
           <span>
             Generated from <strong className="font-medium">{generatedFrom}</strong>. The text is written only from that file, but read every
-            section before you create the item: check names, numbers and wording. Nothing is public until you click Create item.
+            section before you create the item: check names, numbers and wording. The banners are redrawn from the file, so photos appear as plain blocks and fine details may differ from the original. Nothing is public until you click Create item.{skipped > 0 && ` ${skipped} section${skipped === 1 ? '' : 's'} could not be drawn and ${skipped === 1 ? 'was' : 'were'} left out.`}
           </span>
         </p>
       )}
@@ -596,7 +596,7 @@ function EditorForm({ slug, initial, generatedFrom }: { slug?: string; initial: 
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
         <SortableContext items={order} strategy={verticalListSortingStrategy}>
-          <div className="grid gap-3">{order.map((id, idx) => renderBlock(id, idx + 1))}</div>
+          <div className="grid grid-cols-1 gap-3">{order.map((id, idx) => renderBlock(id, idx + 1))}</div>
         </SortableContext>
       </DndContext>
 
@@ -638,9 +638,9 @@ export default function ProjectEditor() {
   const { slug } = useParams()
   const { projects, loading } = useProjects()
   const location = useLocation()
-  const smart = (location.state as { draft?: ProjectInput; source?: string } | null) ?? null
+  const smart = (location.state as { draft?: ProjectInput; source?: string; skipped?: number } | null) ?? null
 
-  if (!slug) return <EditorForm key={smart?.source ?? 'new'} initial={smart?.draft ?? emptyProject} generatedFrom={smart?.draft ? smart.source : undefined} />
+  if (!slug) return <EditorForm key={smart?.source ?? 'new'} initial={smart?.draft ?? emptyProject} generatedFrom={smart?.draft ? smart.source : undefined} skipped={smart?.skipped} />
   if (loading) return <p className="text-muted">Loading…</p>
 
   const project = projects.find((p) => p.slug === slug)

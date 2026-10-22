@@ -1,6 +1,6 @@
 import type { Project, ProjectInput } from '../types'
 
-export interface SmartResult {
+export interface SmartText {
   title: string
   heading: string
   client: string
@@ -20,6 +20,20 @@ export interface SmartResult {
   challengePoints: { title: string; text: string }[]
   brandingLead: string
   branding: string[]
+}
+
+export interface SmartJob {
+  status: 'running' | 'done' | 'error'
+  step: 'read' | 'design' | 'render' | 'save'
+  done: number
+  total: number
+  error: string
+  result: {
+    text: SmartText
+    sections: { url: string; background: string; title: string }[]
+    cover: string
+    skipped: number
+  } | null
 }
 
 async function request<T>(url: string, init: RequestInit = {}): Promise<T> {
@@ -54,13 +68,14 @@ export const api = {
     request<{ email: string }>('/api/auth/login', json('POST', { email, password })),
   logout: () => request<{ ok: true }>('/api/auth/logout', json('POST')),
   me: () => request<{ email: string }>('/api/auth/me'),
-  smartStatus: () => request<{ configured: boolean }>('/api/smart-create/status'),
-  smartAnalyze: (file: File, notes: string) => {
+  smartStatus: () => request<{ configured: boolean; renderer: boolean }>('/api/smart-create/status'),
+  smartStart: (file: File, notes: string) => {
     const form = new FormData()
     form.append('file', file)
     form.append('notes', notes)
-    return request<SmartResult>('/api/smart-create/analyze', { method: 'POST', body: form })
+    return request<{ jobId: string }>('/api/smart-create/start', { method: 'POST', body: form })
   },
+  smartJob: (id: string) => request<SmartJob>(`/api/smart-create/jobs/${encodeURIComponent(id)}`),
   upload: (file: File) => {
     const form = new FormData()
     form.append('file', file)

@@ -8,7 +8,7 @@ import { BANNER_COUNT, normalizeOrder, type Project } from '../types'
 function TextSection({ label, lead, children }: { label: string; lead: string; children: ReactNode }) {
   return (
     <section className="mx-auto grid max-w-[1400px] gap-8 px-4 py-16 sm:px-6 lg:grid-cols-[38%_1fr] lg:gap-12 lg:px-10 lg:py-24">
-      {label ? <h2 className="font-mono text-base uppercase tracking-tight">{label}</h2> : <div />}
+      {label ? <h2 className="text-base uppercase tracking-tight">{label}</h2> : <div />}
       <div className="max-w-[900px]">
         <p className="text-2xl font-medium leading-snug tracking-[-0.02em] sm:text-[28px]">{lead}</p>
         {children}

@@ -1,32 +1,31 @@
 import { useEffect, useRef, useState, type DragEvent } from 'react'
 import { AlertCircle, Check, FileText, Loader2, Sparkles, Upload, X } from 'lucide-react'
-import { api, type SmartResult } from '../../lib/api'
+import { api, type SmartJob } from '../../lib/api'
 import { BANNER_COUNT, emptyProject, normalizeOrder, type CustomBlock, type ProjectInput } from '../../types'
-import { MAX_BANNERS, MAX_PAGES, imageToBanners, luminance, pdfToBanners, type BannerImage } from './pages'
 
 const ACCEPT = 'application/pdf,image/png,image/jpeg,image/webp,image/gif'
 const MAX_BYTES = 25 * 1024 * 1024
 
-type Step = 'read' | 'write' | 'upload' | 'done'
+type Step = SmartJob['step'] | 'done'
 const STEPS: { id: Step; label: string }[] = [
-  { id: 'read', label: 'Preparing banners from the file' },
-  { id: 'write', label: 'Writing the case study' },
-  { id: 'upload', label: 'Saving the banner images' },
+  { id: 'read', label: 'Reading the file and planning the sections' },
+  { id: 'design', label: 'Redrawing each section' },
+  { id: 'render', label: 'Rendering sharp banner images' },
+  { id: 'save', label: 'Saving the images' },
   { id: 'done', label: 'Opening the editor' },
 ]
 
 const newId = () => `c-${crypto.randomUUID().replace(/-/g, '').slice(0, 10)}`
-const asFile = (blob: Blob, name: string) => new File([blob], name, { type: blob.type })
 const sizeLabel = (bytes: number) => (bytes > 1024 * 1024 ? `${(bytes / 1024 / 1024).toFixed(1)} MB` : `${Math.round(bytes / 1024)} KB`)
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+const luminance = (hex: string) => {
+  const n = parseInt(hex.slice(1), 16)
+  return (0.2126 * ((n >> 16) & 255) + 0.7152 * ((n >> 8) & 255) + 0.0722 * (n & 255)) / 255
+}
 
-function buildDraft(
-  ai: SmartResult,
-  fallbackTitle: string,
-  banners: BannerImage[],
-  urls: string[],
-  coverUrl: string,
-): ProjectInput {
-  const first = banners[0]
+function buildDraft(result: NonNullable<SmartJob['result']>, fallbackTitle: string): ProjectInput {
+  const { text: ai, sections, cover } = result
+  const urls = sections.map((x) => x.url)
   const custom: CustomBlock[] = urls.slice(BANNER_COUNT).map((image) => ({
     id: newId(),
     type: 'banner',
@@ -37,6 +36,7 @@ function buildDraft(
     images: [],
     compact: false,
   }))
+  const first = sections[0]?.background ?? emptyProject.colorFrom
   return {
     ...emptyProject,
     title: ai.title.trim() || fallbackTitle,
@@ -58,10 +58,10 @@ function buildDraft(
     challengePoints: ai.challengePoints,
     brandingLead: ai.brandingLead,
     branding: ai.branding,
-    coverImage: coverUrl,
-    colorFrom: first?.background ?? emptyProject.colorFrom,
-    colorTo: first?.accent ?? emptyProject.colorTo,
-    dark: first ? luminance(first.background) < 0.45 : false,
+    coverImage: cover,
+    colorFrom: first,
+    colorTo: sections[1]?.background ?? first,
+    dark: luminance(first) < 0.45,
     banners: Array.from({ length: BANNER_COUNT }, (_, i) => urls[i] ?? ''),
     custom,
     order: normalizeOrder(undefined, custom),
@@ -73,7 +73,7 @@ export default function SmartCreateDialog({
   onGenerated,
 }: {
   onClose: () => void
-  onGenerated: (draft: ProjectInput, sourceName: string) => void
+  onGenerated: (draft: ProjectInput, sourceName: string, skipped: number) => void
 }) {
   const dialog = useRef<HTMLDialogElement>(null)
   const input = useRef<HTMLInputElement>(null)
@@ -109,38 +109,32 @@ export default function SmartCreateDialog({
     if (!file) return
     setBusy(true)
     setError('')
+    setStep('read')
+    setDetail('')
     try {
       const status = await api.smartStatus()
       if (!status.configured) {
         throw new Error('Smart create needs an Anthropic API key. Add ANTHROPIC_API_KEY to server/.env and restart the server.')
       }
-
-      setStep('read')
-      setDetail('')
-      // The AI call and the page rendering run side by side. Nothing is uploaded until both succeed.
-      const analysis = api.smartAnalyze(file, notes)
-      analysis.catch(() => {}) // surfaced below; avoids an unhandled rejection while pages render
-      const isPdf = file.type === 'application/pdf'
-      const rendered = isPdf
-        ? await pdfToBanners(file, (done, total) => setDetail(`Page ${done} of ${total}`))
-        : await imageToBanners(file)
-
-      setStep('write')
-      setDetail('')
-      const ai = await analysis
-
-      setStep('upload')
-      const urls: string[] = []
-      for (let i = 0; i < rendered.banners.length; i++) {
-        setDetail(`Banner ${i + 1} of ${rendered.banners.length}`)
-        urls.push((await api.upload(asFile(rendered.banners[i].blob, `banner-${i + 1}.png`))).url)
+      if (!status.renderer) {
+        throw new Error('Smart create needs Google Chrome (or Chromium) on the machine running the server to redraw the banners. Install it, or set CHROME_PATH in server/.env.')
       }
-      const coverUrl = rendered.cover ? (await api.upload(asFile(rendered.cover, 'cover.jpg'))).url : ''
+
+      const { jobId } = await api.smartStart(file, notes)
+      let job: SmartJob
+      for (;;) {
+        await sleep(1200)
+        job = await api.smartJob(jobId)
+        setStep(job.step)
+        setDetail(job.step === 'design' && job.total ? `${job.done} of ${job.total}` : '')
+        if (job.status !== 'running') break
+      }
+      if (job.status === 'error' || !job.result) throw new Error(job.error || 'Smart create failed. Please try again.')
 
       setStep('done')
       setDetail('')
       const fallbackTitle = file.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').trim() || 'New project'
-      onGenerated(buildDraft(ai, fallbackTitle, rendered.banners, urls, coverUrl), file.name)
+      onGenerated(buildDraft(job.result, fallbackTitle), file.name, job.result.skipped)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
       setBusy(false)
@@ -160,7 +154,7 @@ export default function SmartCreateDialog({
             <Sparkles className="size-5 text-accent" /> Smart create
           </h2>
           <p className="mt-1 text-sm text-muted">
-            Upload a PDF or an image of a project. I'll build the banners and write the case study for you to review.
+            Upload a PDF or an image of a project. Claude redraws each section as a fresh, sharp banner (not a cropped screenshot) and writes the case study text for you to review.
           </p>
         </div>
         {!busy && (
@@ -188,7 +182,7 @@ export default function SmartCreateDialog({
                 </li>
               )
             })}
-            <li className="mt-1 text-xs text-muted">This can take a minute. Keep this window open.</li>
+            <li className="mt-1 text-xs text-muted">This usually takes one to three minutes. Keep this window open.</li>
           </ol>
         ) : (
           <>
@@ -214,7 +208,7 @@ export default function SmartCreateDialog({
                 <>
                   <Upload className="size-8 text-muted" />
                   <span className="text-sm font-medium">Drop a PDF or image here, or click to browse</span>
-                  <span className="text-xs text-muted">PDF, PNG, JPG, WebP or GIF, up to 25 MB. PDFs use their first {MAX_PAGES} pages, and tall pages are cut into several banners (up to {MAX_BANNERS}).</span>
+                  <span className="text-xs text-muted">PDF, PNG, JPG, WebP or GIF, up to 25 MB. Up to 12 sections are redrawn.</span>
                 </>
               )}
             </button>
